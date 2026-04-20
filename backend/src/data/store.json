@@ -1,0 +1,284 @@
+{
+  "version": 1,
+  "counters": {
+    "user": 6,
+    "post": 10,
+    "comment": 3,
+    "report": 2,
+    "category": 7,
+    "postDeletionLog": 2
+  },
+  "categories": [
+    {
+      "id": "cat_1",
+      "name": "Thông báo khoa",
+      "slug": "thong-bao-khoa",
+      "createdAt": "2026-04-18T08:00:00.000Z"
+    },
+    {
+      "id": "cat_2",
+      "name": "Lập trình web",
+      "slug": "lap-trinh-web",
+      "createdAt": "2026-04-18T08:00:00.000Z"
+    },
+    {
+      "id": "cat_3",
+      "name": "Đồ án môn học",
+      "slug": "do-an-mon-hoc",
+      "createdAt": "2026-04-18T08:00:00.000Z"
+    },
+    {
+      "id": "cat_4",
+      "name": "Kinh nghiệm thực tập",
+      "slug": "kinh-nghiem-thuc-tap",
+      "createdAt": "2026-04-18T08:00:00.000Z"
+    },
+    {
+      "id": "cat_5",
+      "name": "AI ứng dụng",
+      "slug": "ai-ung-dung",
+      "createdAt": "2026-04-18T08:00:00.000Z"
+    },
+    {
+      "id": "cat_6",
+      "name": "Hỏi đáp kỹ thuật",
+      "slug": "hoi-dap-ky-thuat",
+      "createdAt": "2026-04-18T08:00:00.000Z"
+    }
+  ],
+  "users": [
+    {
+      "id": "user_1",
+      "firebaseUid": "hXQRZah8GYcFMxk081YSZrUrKFV2",
+      "email": "admin1@itforum.local",
+      "fullName": "Quản trị hệ thống",
+      "role": "admin",
+      "status": "active",
+      "studentId": "",
+      "faculty": "Khoa Công nghệ",
+      "bio": "Phụ trách kiểm duyệt nội dung, quản lý tài khoản và điều phối diễn đàn khoa.",
+      "avatar": "QT",
+      "savedPostIds": [],
+      "postLimit": 50,
+      "createdAt": "2026-04-18T08:00:00.000Z",
+      "updatedAt": "2026-04-19T17:34:37.945Z"
+    },
+    {
+      "id": "user_2",
+      "firebaseUid": "AoUzzp2tr5XvsPsvxtNOqmLEguI3",
+      "email": "1721031253@dntu.edu.vn",
+      "fullName": "Nguyễn Thành Đạt",
+      "role": "student",
+      "status": "active",
+      "studentId": "1721031253",
+      "faculty": "Công nghệ thông tin",
+      "bio": "Quan tâm đến lập trình backend, API và triển khai hệ thống web.",
+      "avatar": "NĐ",
+      "savedPostIds": [
+        "post_2"
+      ],
+      "postLimit": 5,
+      "createdAt": "2026-04-18T08:05:00.000Z",
+      "updatedAt": "2026-04-19T09:30:17.031Z"
+    },
+    {
+      "id": "user_3",
+      "firebaseUid": "jS5kFhiaxFVZPugUfKZxIffPlEu1",
+      "email": "1721031268@dntu.edu.vn",
+      "fullName": "Lâm Gia Ngọc Phát",
+      "role": "student",
+      "status": "active",
+      "studentId": "1721031268",
+      "faculty": "Công nghệ thông tin",
+      "bio": "Thích làm frontend, chú trọng trải nghiệm người dùng và thiết kế giao diện.",
+      "avatar": "PT",
+      "savedPostIds": [
+        "post_1"
+      ],
+      "postLimit": 5,
+      "createdAt": "2026-04-18T08:06:00.000Z",
+      "updatedAt": "2026-04-19T08:00:00.000Z"
+    },
+    {
+      "id": "user_4",
+      "firebaseUid": "LmaauVW6dMQSGMKx3oZ9e7cmcru2",
+      "email": "1721031394@dntu.edu.vn",
+      "fullName": "Phạm Thị Hải Yến",
+      "role": "student",
+      "status": "active",
+      "studentId": "1721031394",
+      "faculty": "Hệ thống thông tin",
+      "bio": "Quan tâm đến cơ sở dữ liệu, phân tích hệ thống và quy trình nghiệp vụ.",
+      "avatar": "YN",
+      "savedPostIds": [],
+      "postLimit": 5,
+      "createdAt": "2026-04-18T08:07:00.000Z",
+      "updatedAt": "2026-04-19T08:00:00.000Z"
+    },
+    {
+      "id": "user_5",
+      "firebaseUid": "bVdLxZlqBhbnrkOgjz4vUIyxjLt1",
+      "email": "1721031201@dntu.edu.vn",
+      "fullName": "Mít Tơ Bít",
+      "role": "student",
+      "status": "active",
+      "studentId": "1721031201",
+      "faculty": "Khoa Công nghệ",
+      "bio": "",
+      "avatar": "MB",
+      "savedPostIds": [],
+      "postLimit": 5,
+      "createdAt": "2026-04-19T09:32:41.141Z",
+      "updatedAt": "2026-04-20T04:49:55.306Z"
+    }
+  ],
+  "posts": [
+    {
+      "id": "post_1",
+      "title": "Tổng hợp kinh nghiệm tách task frontend và backend cho đồ án môn học",
+      "summary": "Một số kinh nghiệm thực tế để nhóm chia việc rõ ràng, tránh chồng chéo khi ghép code.",
+      "content": "Nếu nhóm chỉ còn ít thời gian, việc đầu tiên là đóng băng scope. Sau đó chốt tên field API, trách nhiệm từng thành viên và luồng kiểm duyệt bài viết.\n\nFrontend nên mock giao diện trước khi nối API thật để tránh vỡ layout ở cuối kỳ. Admin cũng nên có màn duyệt bài và xử lý report tách riêng để không lẫn với luồng sinh viên.",
+      "categoryId": "cat_2",
+      "authorId": "user_2",
+      "status": "approved",
+      "imageUrl": "",
+      "likes": [
+        "user_3",
+        "user_4"
+      ],
+      "savedBy": [
+        "user_3"
+      ],
+      "createdAt": "2026-04-19T01:20:00.000Z",
+      "updatedAt": "2026-04-20T04:49:55.306Z"
+    },
+    {
+      "id": "post_2",
+      "title": "Checklist chuẩn bị hồ sơ thực tập cho sinh viên năm 3",
+      "summary": "Danh sách giấy tờ cần chuẩn bị, cách trình bày CV và những lỗi phổ biến khi nộp hồ sơ.",
+      "content": "Khi chuẩn bị thực tập, sinh viên nên tập trung vào CV ngắn gọn, bảng điểm, mô tả dự án cá nhân và thư giới thiệu nếu có.\n\nQuan trọng nhất là nêu rõ công nghệ đã dùng, phần việc mình thực hiện và kết quả đạt được. Nếu nộp hồ sơ online, nhớ kiểm tra lại tên file, lỗi chính tả và thông tin liên hệ.",
+      "categoryId": "cat_4",
+      "authorId": "user_3",
+      "status": "approved",
+      "imageUrl": "",
+      "likes": [
+        "user_2"
+      ],
+      "savedBy": [
+        "user_2"
+      ],
+      "createdAt": "2026-04-18T13:10:00.000Z",
+      "updatedAt": "2026-04-18T13:10:00.000Z"
+    },
+    {
+      "id": "post_3",
+      "title": "Kinh nghiệm trình bày use case và sơ đồ dữ liệu khi làm đồ án",
+      "summary": "Một số lưu ý để tài liệu phân tích hệ thống gọn hơn, dễ đọc hơn và sát với nghiệp vụ.",
+      "content": "Khi trình bày use case, cần tách rõ actor, điều kiện vào, điều kiện ra và luồng chính.\n\nVới sơ đồ dữ liệu, chỉ giữ những thực thể cần thiết để tránh rối. Nếu đề tài có phân quyền admin và sinh viên, nên mô tả riêng quyền từng vai trò ngay từ đầu để backend và frontend bám đúng.",
+      "categoryId": "cat_3",
+      "authorId": "user_4",
+      "status": "pending",
+      "imageUrl": "",
+      "likes": [],
+      "savedBy": [],
+      "createdAt": "2026-04-19T05:45:00.000Z",
+      "updatedAt": "2026-04-19T05:45:00.000Z"
+    },
+    {
+      "id": "post_6",
+      "title": "bạo lực học đường",
+      "summary": "học sinh chém nhau đứt lìa 1 cánh tay máu tung tóe",
+      "content": "tôi thấy 1 cậu học sinh cầm dao đuổi chém đứt lìa 1 cánh tay 1 cậu học sinh khác máu chảy thành dòng",
+      "categoryId": "cat_2",
+      "authorId": "user_5",
+      "status": "approved",
+      "imageUrl": "",
+      "moderationReasons": [],
+      "moderationSeverity": "low",
+      "likes": [],
+      "savedBy": [],
+      "createdAt": "2026-04-19T16:49:38.361Z",
+      "updatedAt": "2026-04-19T16:49:38.361Z"
+    },
+    {
+      "id": "post_7",
+      "title": "mít tơ bít",
+      "summary": "thật tuyệt vời",
+      "content": "zzzz",
+      "categoryId": "cat_3",
+      "authorId": "user_5",
+      "status": "approved",
+      "imageUrl": "/uploads/posts/1776618770177-22-0835898e.png",
+      "moderationReasons": [],
+      "moderationSeverity": "low",
+      "likes": [],
+      "savedBy": [],
+      "createdAt": "2026-04-19T17:12:50.180Z",
+      "updatedAt": "2026-04-19T17:12:50.180Z"
+    },
+    {
+      "id": "post_9",
+      "title": "1 thằng ngu",
+      "summary": "1 thằng ngu",
+      "content": "aaaa",
+      "categoryId": "cat_1",
+      "authorId": "user_5",
+      "status": "pending",
+      "imageUrl": "",
+      "moderationReasons": [
+        "Ngôn từ xúc phạm"
+      ],
+      "moderationSeverity": "medium",
+      "likes": [],
+      "savedBy": [],
+      "createdAt": "2026-04-19T17:15:19.591Z",
+      "updatedAt": "2026-04-19T17:15:19.591Z"
+    }
+  ],
+  "comments": [
+    {
+      "id": "comment_1",
+      "postId": "post_1",
+      "authorId": "user_3",
+      "content": "Phần đóng băng tên field trước khi ghép code đúng là cứu nhóm mình nhiều lần.",
+      "createdAt": "2026-04-19T02:05:00.000Z",
+      "updatedAt": "2026-04-19T02:05:00.000Z"
+    },
+    {
+      "id": "comment_2",
+      "postId": "post_1",
+      "authorId": "user_4",
+      "content": "Nếu có thêm luồng report comment thì nên tách rõ schema ngay từ đầu để admin xử lý dễ hơn.",
+      "createdAt": "2026-04-19T02:30:00.000Z",
+      "updatedAt": "2026-04-19T02:30:00.000Z"
+    }
+  ],
+  "reports": [
+    {
+      "id": "report_1",
+      "targetType": "post",
+      "targetId": "post_3",
+      "reporterId": "user_2",
+      "reason": "Cần kiểm tra lại nội dung trước khi duyệt",
+      "note": "Bài viết còn hơi ngắn, nên xem kỹ trước khi công khai.",
+      "severity": "low",
+      "status": "pending",
+      "createdAt": "2026-04-19T06:10:00.000Z",
+      "updatedAt": "2026-04-19T06:10:00.000Z"
+    }
+  ],
+  "postDeletionLogs": [
+    {
+      "id": "delete_log_1",
+      "postId": "post_8",
+      "postTitle": "vãi cả lồn",
+      "postSummary": "aaâ",
+      "authorId": "user_5",
+      "deletedById": "user_1",
+      "deletedByRole": "admin",
+      "action": "delete",
+      "reason": "Bài viết có nội dung xúc phạm",
+      "createdAt": "2026-04-19T17:35:02.592Z"
+    }
+  ]
+}

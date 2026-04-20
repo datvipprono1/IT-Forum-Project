@@ -8,10 +8,12 @@ import ManageReports from "./pages/Admin/ManageReports";
 import ManageUsers from "./pages/Admin/ManageUsers";
 import PendingPosts from "./pages/Admin/PendingPosts";
 import Login from "./pages/Auth/Login";
+import ResetPassword from "./pages/Auth/ResetPassword";
 import CreatePost from "./pages/Student/CreatePost";
 import Home from "./pages/Student/Home";
 import PostDetail from "./pages/Student/PostDetail";
 import Profile from "./pages/Student/Profile";
+import UserProfile from "./pages/Student/UserProfile";
 
 function ForumLayout() {
   return (
@@ -113,12 +115,14 @@ function App() {
 
         <Route element={<GuestLayout />}>
           <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Route>
 
         <Route element={<ProtectedLayout />}>
           <Route path="/home" element={<Home />} />
           <Route path="/posts/:id" element={<PostDetail />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/users/:id" element={<UserProfile />} />
           <Route path="/create-post" element={<CreatePost />} />
 
           <Route element={<RequireAdmin />}>

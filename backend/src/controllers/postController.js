@@ -117,22 +117,19 @@ exports.createPost = async (req, res) => {
     }
 
     const statusMap = {
-      POST_LIMIT_REACHED: 400,
       IMAGE_TOO_LARGE: 400,
       UNSUPPORTED_IMAGE_FORMAT: 400,
       INVALID_IMAGE_DATA: 400,
     };
 
     const fallbackMessage =
-      error.code === "POST_LIMIT_REACHED"
-        ? "Bạn đã đạt số lượng bài viết tối đa cho phép."
-        : error.message === "IMAGE_TOO_LARGE"
-          ? "Ảnh quá lớn. Vui lòng chọn ảnh tối đa 5MB."
-          : error.message === "UNSUPPORTED_IMAGE_FORMAT"
-            ? "Chỉ hỗ trợ ảnh PNG, JPG, WEBP hoặc GIF."
-            : error.message === "INVALID_IMAGE_DATA"
-              ? "Dữ liệu ảnh không hợp lệ."
-              : error.message;
+      error.message === "IMAGE_TOO_LARGE"
+        ? "Ảnh quá lớn. Vui lòng chọn ảnh tối đa 5MB."
+        : error.message === "UNSUPPORTED_IMAGE_FORMAT"
+          ? "Chỉ hỗ trợ ảnh PNG, JPG, WEBP hoặc GIF."
+          : error.message === "INVALID_IMAGE_DATA"
+            ? "Dữ liệu ảnh không hợp lệ."
+            : error.message;
 
     return res.status(statusMap[error.code || error.message] || 500).json({ message: fallbackMessage });
   }

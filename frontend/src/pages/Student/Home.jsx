@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   commentPost,
@@ -17,43 +17,41 @@ import PostCard from "../../components/post/PostCard";
 import ReportModal from "../../components/post/ReportModal";
 import { useAuth } from "../../context/AuthContext";
 
-const POSTS_PER_PAGE = 10;
+const POSTS_PER_PAGE = 5;
+const DEFAULT_PAGINATION = {
+  currentPage: 1,
+  totalPages: 1,
+  totalItems: 0,
+  limit: POSTS_PER_PAGE,
+  hasPreviousPage: false,
+  hasNextPage: false,
+  from: 0,
+  to: 0,
+};
 
-function buildVisiblePages(currentPage, totalPages) {
-  const pages = [];
+function mergeUniquePosts(currentPosts, incomingPosts) {
+  const postMap = new Map(currentPosts.map((post) => [post.id, post]));
 
-  for (let page = 1; page <= totalPages; page += 1) {
-    const isEdgePage = page === 1 || page === totalPages;
-    const isNearCurrentPage = Math.abs(page - currentPage) <= 1;
+  incomingPosts.forEach((post) => {
+    postMap.set(post.id, post);
+  });
 
-    if (isEdgePage || isNearCurrentPage) {
-      pages.push(page);
-    }
-  }
-
-  return [...new Set(pages)];
+  return Array.from(postMap.values()).sort((left, right) => new Date(right.createdAt) - new Date(left.createdAt));
 }
 
 function Home() {
   const navigate = useNavigate();
   const { user, isAdmin } = useAuth();
+  const loadMoreRef = useRef(null);
   const [posts, setPosts] = useState([]);
-  const [pagination, setPagination] = useState({
-    currentPage: 1,
-    totalPages: 1,
-    totalItems: 0,
-    limit: POSTS_PER_PAGE,
-    hasPreviousPage: false,
-    hasNextPage: false,
-    from: 0,
-    to: 0,
-  });
+  const [pagination, setPagination] = useState(DEFAULT_PAGINATION);
+  const [loadedPages, setLoadedPages] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deletingPost, setDeletingPost] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
   const [expandedPosts, setExpandedPosts] = useState({});
   const [postDetails, setPostDetails] = useState({});
   const [loadingDetails, setLoadingDetails] = useState({});
@@ -64,67 +62,7 @@ function Home() {
   const [reporting, setReporting] = useState(false);
   const [lightboxImage, setLightboxImage] = useState(null);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadPosts(pageToLoad) {
-      try {
-        setLoading(true);
-        setError("");
-        const response = await getPosts({
-          page: pageToLoad,
-          limit: POSTS_PER_PAGE,
-        });
-
-        if (!isMounted) {
-          return;
-        }
-
-        setPosts(response.data.items || []);
-        setPagination(
-          response.data.pagination || {
-            currentPage: 1,
-            totalPages: 1,
-            totalItems: 0,
-            limit: POSTS_PER_PAGE,
-            hasPreviousPage: false,
-            hasNextPage: false,
-            from: 0,
-            to: 0,
-          }
-        );
-
-        if (response.data.pagination?.currentPage && response.data.pagination.currentPage !== pageToLoad) {
-          setCurrentPage(response.data.pagination.currentPage);
-        }
-      } catch (requestError) {
-        if (isMounted) {
-          setError(requestError.response?.data?.message || "Không tải được bảng tin.");
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    }
-
-    loadPosts(currentPage);
-
-    return () => {
-      isMounted = false;
-    };
-  }, [currentPage]);
-
-  const refreshCurrentPage = async () => {
-    const response = await getPosts({
-      page: currentPage,
-      limit: POSTS_PER_PAGE,
-    });
-    const visiblePosts = response.data.items || [];
-    const visibleIds = new Set(visiblePosts.map((post) => post.id));
-
-    setPosts(visiblePosts);
-    setPagination(response.data.pagination || pagination);
+  const pruneFeedState = (visibleIds) => {
     setPostDetails((current) => {
       const next = { ...current };
 
@@ -147,11 +85,135 @@ function Home() {
 
       return next;
     });
+    setCommentDrafts((current) => {
+      const next = { ...current };
 
-    if (response.data.pagination?.currentPage && response.data.pagination.currentPage !== currentPage) {
-      setCurrentPage(response.data.pagination.currentPage);
+      Object.keys(next).forEach((postId) => {
+        if (!visibleIds.has(postId)) {
+          delete next[postId];
+        }
+      });
+
+      return next;
+    });
+  };
+
+  const loadFirstPage = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const response = await getPosts({
+        page: 1,
+        limit: POSTS_PER_PAGE,
+      });
+      const items = response.data.items || [];
+      const nextPagination = response.data.pagination || DEFAULT_PAGINATION;
+      const visibleIds = new Set(items.map((post) => post.id));
+
+      setPosts(items);
+      setPagination(nextPagination);
+      setLoadedPages(nextPagination.currentPage || 1);
+      pruneFeedState(visibleIds);
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || "Không tải được bảng tin.");
+    } finally {
+      setLoading(false);
     }
   };
+
+  const reloadLoadedFeed = async () => {
+    const pagesToReload = Math.max(1, loadedPages || 1);
+
+    try {
+      setLoading(true);
+      setError("");
+      let aggregatedPosts = [];
+      let nextPagination = DEFAULT_PAGINATION;
+      let lastLoadedPage = 1;
+
+      for (let page = 1; page <= pagesToReload; page += 1) {
+        const response = await getPosts({
+          page,
+          limit: POSTS_PER_PAGE,
+        });
+        const items = response.data.items || [];
+
+        nextPagination = response.data.pagination || nextPagination;
+        lastLoadedPage = nextPagination.currentPage || page;
+        aggregatedPosts = mergeUniquePosts(aggregatedPosts, items);
+
+        if (!nextPagination.hasNextPage) {
+          break;
+        }
+      }
+
+      const visibleIds = new Set(aggregatedPosts.map((post) => post.id));
+
+      setPosts(aggregatedPosts);
+      setPagination(nextPagination);
+      setLoadedPages(lastLoadedPage);
+      pruneFeedState(visibleIds);
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || "Không thể làm mới bảng tin.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMorePosts = async () => {
+    if (loading || loadingMore || !pagination.hasNextPage) {
+      return;
+    }
+
+    const nextPage = loadedPages + 1;
+
+    try {
+      setLoadingMore(true);
+      const response = await getPosts({
+        page: nextPage,
+        limit: POSTS_PER_PAGE,
+      });
+      const incomingPosts = response.data.items || [];
+      const nextPagination = response.data.pagination || DEFAULT_PAGINATION;
+
+      setPosts((current) => mergeUniquePosts(current, incomingPosts));
+      setPagination(nextPagination);
+      setLoadedPages(nextPagination.currentPage || nextPage);
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || "Không tải thêm được bài viết.");
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  useEffect(() => {
+    loadFirstPage();
+  }, []);
+
+  useEffect(() => {
+    const target = loadMoreRef.current;
+
+    if (!target || loading || loadingMore || !pagination.hasNextPage) {
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+
+        if (entry?.isIntersecting) {
+          loadMorePosts();
+        }
+      },
+      {
+        rootMargin: "260px 0px",
+      }
+    );
+
+    observer.observe(target);
+
+    return () => observer.disconnect();
+  }, [loading, loadingMore, pagination.hasNextPage, loadedPages]);
 
   const syncPostSummary = (updatedPost) => {
     setPosts((current) => current.map((post) => (post.id === updatedPost.id ? updatedPost : post)));
@@ -244,7 +306,7 @@ function Home() {
     try {
       await loadPostDetail(postId);
     } catch {
-      // Inline error state already handles the failure.
+      // Inline error state is shown below the post.
     }
   };
 
@@ -381,7 +443,7 @@ function Home() {
   const handleDeletePost = async (postId, payload = {}) => {
     try {
       await deletePost(postId, payload);
-      await refreshCurrentPage();
+      await reloadLoadedFeed();
       setNotice("Đã xóa bài viết.");
       setError("");
     } catch (requestError) {
@@ -417,15 +479,6 @@ function Home() {
     }
   };
 
-  const handlePageChange = (page) => {
-    if (page === currentPage || page < 1 || page > pagination.totalPages) {
-      return;
-    }
-
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   const categoryMap = posts.reduce((accumulator, post) => {
     accumulator[post.category] = (accumulator[post.category] || 0) + 1;
     return accumulator;
@@ -434,17 +487,17 @@ function Home() {
   const topCategories = Object.entries(categoryMap)
     .sort((left, right) => right[1] - left[1])
     .slice(0, 3);
-  const visiblePages = buildVisiblePages(pagination.currentPage, pagination.totalPages);
 
   return (
     <section className="page-stack">
-      <div className="hero-panel">
+      {false ? (
+        <div className="hero-panel">
         <div className="hero-panel__content">
           <p className="eyebrow">Bảng tin sinh viên</p>
           <h2>Bài viết an toàn được đăng ngay, chỉ bài có dấu hiệu rủi ro mới qua admin.</h2>
           <p>
-            Mọi thao tác giờ nằm ngay trên từng bài viết: xem bình luận, báo cáo, chỉnh sửa, xóa và phóng to ảnh mà
-            không cần nhảy sang trang chi tiết.
+            Bảng tin giờ tải dần khi bạn cuộn xuống. Phần bình luận, báo cáo và phóng to ảnh vẫn nằm ngay trên từng bài
+            viết nhưng chỉ tải khi thực sự cần dùng.
           </p>
           <div className="hero-panel__actions">
             <button type="button" className="primary-button" onClick={() => navigate("/create-post")}>
@@ -466,9 +519,9 @@ function Home() {
               <small>Tổng số bài đang hiển thị toàn diễn đàn</small>
             </div>
             <div className="mini-stat">
-              <strong>{pagination.to ? `${pagination.from}-${pagination.to}` : "0"}</strong>
-              <span>Đang xem</span>
-              <small>Khoảng bài trên trang hiện tại</small>
+              <strong>{posts.length}</strong>
+              <span>Đã tải</span>
+              <small>Số bài hiện đã được lazy load lên màn hình</small>
             </div>
             <div className="mini-stat">
               <strong>{user?.savedPostIds?.length || 0}</strong>
@@ -477,7 +530,8 @@ function Home() {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      ) : null}
 
       {notice ? <div className="form-success">{notice}</div> : null}
       {error ? <div className="form-error">{error}</div> : null}
@@ -490,7 +544,7 @@ function Home() {
               <h3>Bài viết đang hiển thị công khai</h3>
             </div>
             <span className="section-heading__note">
-              Trang {pagination.currentPage}/{pagination.totalPages}
+              Đã tải {posts.length}/{pagination.totalItems || 0} bài viết
             </span>
           </div>
 
@@ -517,6 +571,7 @@ function Home() {
                   onEdit={() => navigate(`/create-post?edit=${post.id}`)}
                   onDelete={() => handleDeleteRequest(post)}
                   onImageClick={(src, title) => setLightboxImage({ src, title })}
+                  onAuthorClick={(authorId) => navigate(`/users/${authorId}`)}
                 >
                   {expandedPosts[post.id] ? (
                     <div className="inline-discussion">
@@ -569,6 +624,7 @@ function Home() {
                                 comment={comment}
                                 canDelete={isAdmin || comment.authorId === user.id}
                                 onDelete={() => handleDeleteComment(post.id, comment.id)}
+                                onAuthorClick={(authorId) => navigate(`/users/${authorId}`)}
                                 onReport={
                                   comment.authorId !== user.id
                                     ? () =>
@@ -592,51 +648,13 @@ function Home() {
               ))
             : null}
 
-          {!loading && pagination.totalPages > 1 ? (
-            <div className="panel pagination-bar">
-              <div className="pagination-bar__info">
-                Hiển thị {pagination.from}-{pagination.to} trên tổng {pagination.totalItems} bài viết
-              </div>
-
-              <div className="pagination-bar__controls">
-                <button
-                  type="button"
-                  className="outline-button compact"
-                  disabled={!pagination.hasPreviousPage}
-                  onClick={() => handlePageChange(pagination.currentPage - 1)}
-                >
-                  Trang trước
-                </button>
-
-                <div className="pagination-bar__pages">
-                  {visiblePages.map((page, index) => {
-                    const previousPage = visiblePages[index - 1];
-                    const showEllipsis = previousPage && page - previousPage > 1;
-
-                    return (
-                      <span key={page} className="pagination-bar__page-group">
-                        {showEllipsis ? <span className="pagination-ellipsis">...</span> : null}
-                        <button
-                          type="button"
-                          className={page === pagination.currentPage ? "pagination-button is-active" : "pagination-button"}
-                          onClick={() => handlePageChange(page)}
-                        >
-                          {page}
-                        </button>
-                      </span>
-                    );
-                  })}
-                </div>
-
-                <button
-                  type="button"
-                  className="outline-button compact"
-                  disabled={!pagination.hasNextPage}
-                  onClick={() => handlePageChange(pagination.currentPage + 1)}
-                >
-                  Trang sau
-                </button>
-              </div>
+          {!loading && posts.length ? (
+            <div ref={loadMoreRef} className="panel empty-state">
+              {loadingMore
+                ? "Đang tải thêm bài viết..."
+                : pagination.hasNextPage
+                  ? "Kéo xuống thêm để tải tiếp bài viết."
+                  : `Đã tải hết ${posts.length} bài viết đang công khai.`}
             </div>
           ) : null}
         </div>
@@ -646,7 +664,7 @@ function Home() {
             <div className="section-heading">
               <div>
                 <p className="eyebrow">Chủ đề nổi bật</p>
-                <h3>Phân bố bài viết trên trang hiện tại</h3>
+                <h3>Phân bố bài viết đã tải lên feed</h3>
               </div>
             </div>
             <div className="trend-list">

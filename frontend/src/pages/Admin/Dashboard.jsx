@@ -70,7 +70,8 @@ function Dashboard() {
 
   return (
     <section className="page-stack">
-      <div className="hero-panel admin-hero">
+      {false ? (
+        <div className="hero-panel admin-hero">
         <div className="hero-panel__content">
           <p className="eyebrow">Bảng điều khiển admin</p>
           <h2>Dashboard này đang lấy số liệu thật từ backend file-store và Firebase Auth.</h2>
@@ -78,7 +79,8 @@ function Dashboard() {
             Bạn có thể theo dõi tài khoản, số bài chờ duyệt, report vi phạm và tạo chủ đề mới ngay trên cùng một màn hình.
           </p>
         </div>
-      </div>
+        </div>
+      ) : null}
 
       {error ? <div className="form-error">{error}</div> : null}
       {success ? <div className="form-success">{success}</div> : null}

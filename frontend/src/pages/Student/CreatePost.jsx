@@ -3,6 +3,21 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { createPost, getCategories, getManagedPost, updatePost } from "../../api/postApi";
 import { readFileAsDataUrl, resolveMediaUrl } from "../../utils/media";
 
+function AttachmentIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="upload-trigger__icon">
+      <path
+        d="M21.44 11.05 12.25 20.24a6 6 0 1 1-8.49-8.49l9.2-9.19a4 4 0 0 1 5.65 5.66l-9.2 9.19a2 2 0 1 1-2.82-2.83l8.48-8.48"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.9"
+      />
+    </svg>
+  );
+}
+
 function CreatePost() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -166,10 +181,12 @@ function CreatePost() {
 
   const previewCategory = categories.find((item) => item.id === formData.categoryId)?.name || "Chưa chọn chủ đề";
   const previewImage = selectedImage?.dataUrl || (!removeImage ? resolveMediaUrl(existingImageUrl) : "");
+  const imageStatusLabel = selectedImage?.name || (!removeImage && existingImageUrl ? "Đang dùng ảnh hiện tại" : "Chưa chọn ảnh");
 
   return (
     <section className="page-stack">
-      <div className="hero-panel hero-panel--compact">
+      {false ? (
+        <div className="hero-panel hero-panel--compact">
         <div className="hero-panel__content">
           <p className="eyebrow">{editId ? "Chỉnh sửa bài viết" : "Soạn bài viết"}</p>
           <h2>
@@ -182,7 +199,8 @@ function CreatePost() {
             xúc phạm, phân biệt, tình dục, bạo lực hoặc máu me, bài sẽ vào hàng chờ duyệt.
           </p>
         </div>
-      </div>
+        </div>
+      ) : null}
 
       {error ? <div className="form-error">{error}</div> : null}
       {success ? <div className="form-success">{success}</div> : null}
@@ -237,7 +255,19 @@ function CreatePost() {
 
               <div className="field">
                 <label htmlFor="imageFile">Ảnh minh họa</label>
-                <input id="imageFile" className="text-input" type="file" accept="image/*" onChange={handleImageChange} />
+                <input
+                  id="imageFile"
+                  className="file-input-hidden"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+                <div className="upload-trigger-row">
+                  <label htmlFor="imageFile" className="upload-trigger" title="Chọn tệp hình ảnh">
+                    <AttachmentIcon />
+                  </label>
+                  <span className="upload-trigger__filename">{imageStatusLabel}</span>
+                </div>
                 <span className="section-heading__note">Tối đa 1 ảnh, dung lượng 5MB.</span>
               </div>
 

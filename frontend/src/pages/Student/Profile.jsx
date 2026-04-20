@@ -3,10 +3,22 @@ import { useNavigate } from "react-router-dom";
 import { changePassword } from "../../api/authApi";
 import { deletePost } from "../../api/postApi";
 import DeletePostModal from "../../components/post/DeletePostModal";
-import { getProfile, updateProfile } from "../../api/userApi";
 import { useAuth } from "../../context/AuthContext";
+import { getProfile, updateProfile } from "../../api/userApi";
 import formatDate from "../../utils/formatDate";
 import { getPostStatusLabel, getRoleLabel } from "../../utils/labels";
+
+function ProfilePageIcon() {
+  return (
+    <span className="profile-banner__page-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" role="presentation">
+        <circle cx="12" cy="7.25" r="4.25" />
+        <path d="M4.5 19a7.5 7.5 0 0 1 15 0" />
+        <path d="M15.75 15.75h3.75" />
+      </svg>
+    </span>
+  );
+}
 
 function Profile() {
   const navigate = useNavigate();
@@ -35,6 +47,7 @@ function Profile() {
     async function loadProfile() {
       try {
         setLoading(true);
+        setError("");
         const response = await getProfile();
 
         if (!isMounted) {
@@ -66,9 +79,9 @@ function Profile() {
   }, []);
 
   const refreshLocalProfile = async () => {
-    const latestProfile = await getProfile();
-    setProfile(latestProfile.data);
-    return latestProfile.data;
+    const response = await getProfile();
+    setProfile(response.data);
+    return response.data;
   };
 
   const handleProfileChange = (event) => {
@@ -196,8 +209,11 @@ function Profile() {
       <div className="panel profile-banner">
         <div className="profile-banner__identity">
           <div className="profile-banner__avatar">{profile.avatar}</div>
-          <div>
-            <p className="eyebrow">Hồ sơ người dùng</p>
+          <div className="profile-banner__title-block">
+            <div className="profile-banner__eyebrow">
+              <ProfilePageIcon />
+              <p className="eyebrow">Hồ sơ người dùng</p>
+            </div>
             <h2>{profile.fullName}</h2>
             <p>{profile.bio || "Chưa có mô tả cá nhân."}</p>
           </div>
@@ -332,9 +348,13 @@ function Profile() {
                     </div>
                     <div className="admin-table__actions">
                       <span>{formatDate(post.createdAt)}</span>
-                      <Link to={`/create-post?edit=${post.id}`} className="text-link">
+                      <button
+                        type="button"
+                        className="ghost-button compact"
+                        onClick={() => navigate(`/create-post?edit=${post.id}`)}
+                      >
                         Chỉnh sửa
-                      </Link>
+                      </button>
                       <button type="button" className="ghost-button compact danger" onClick={() => handleDeletePost(post)}>
                         Xóa
                       </button>

@@ -18,6 +18,7 @@ function PostCard({
   onEdit,
   onDelete,
   onImageClick,
+  onAuthorClick,
   children,
 }) {
   const imageSrc = resolveMediaUrl(post.imageUrl);
@@ -25,7 +26,7 @@ function PostCard({
   return (
     <article id={`post-${post.id}`} className="panel post-card">
       <div className="post-card__header">
-        <div className="post-card__author">
+        <button type="button" className="post-card__author post-card__author-button" onClick={() => onAuthorClick?.(post.authorId)}>
           <div className="avatar-badge">{post.authorAvatar || post.author.slice(0, 2).toUpperCase()}</div>
           <div>
             <strong>{post.author}</strong>
@@ -34,7 +35,7 @@ function PostCard({
               {post.authorFaculty ? ` • ${post.authorFaculty}` : ""}
             </p>
           </div>
-        </div>
+        </button>
         <span className="status-pill status-pill--published">{post.category}</span>
       </div>
 

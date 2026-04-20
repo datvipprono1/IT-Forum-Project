@@ -2,11 +2,14 @@
   "version": 1,
   "counters": {
     "user": 6,
-    "post": 10,
-    "comment": 3,
-    "report": 2,
+    "post": 14,
+    "comment": 5,
+    "report": 3,
     "category": 7,
-    "postDeletionLog": 2
+    "postDeletionLog": 6,
+    "customModerationTerm": 3,
+    "notification": 8,
+    "passwordResetToken": 50
   },
   "categories": [
     {
@@ -51,17 +54,16 @@
       "id": "user_1",
       "firebaseUid": "hXQRZah8GYcFMxk081YSZrUrKFV2",
       "email": "admin1@itforum.local",
-      "fullName": "Quản trị hệ thống",
+      "fullName": "Admin",
       "role": "admin",
       "status": "active",
       "studentId": "",
       "faculty": "Khoa Công nghệ",
       "bio": "Phụ trách kiểm duyệt nội dung, quản lý tài khoản và điều phối diễn đàn khoa.",
-      "avatar": "QT",
+      "avatar": "AD",
       "savedPostIds": [],
-      "postLimit": 50,
       "createdAt": "2026-04-18T08:00:00.000Z",
-      "updatedAt": "2026-04-19T17:34:37.945Z"
+      "updatedAt": "2026-04-20T12:16:29.980Z"
     },
     {
       "id": "user_2",
@@ -77,9 +79,8 @@
       "savedPostIds": [
         "post_2"
       ],
-      "postLimit": 5,
       "createdAt": "2026-04-18T08:05:00.000Z",
-      "updatedAt": "2026-04-19T09:30:17.031Z"
+      "updatedAt": "2026-04-20T14:56:40.122Z"
     },
     {
       "id": "user_3",
@@ -95,7 +96,6 @@
       "savedPostIds": [
         "post_1"
       ],
-      "postLimit": 5,
       "createdAt": "2026-04-18T08:06:00.000Z",
       "updatedAt": "2026-04-19T08:00:00.000Z"
     },
@@ -109,11 +109,10 @@
       "studentId": "1721031394",
       "faculty": "Hệ thống thông tin",
       "bio": "Quan tâm đến cơ sở dữ liệu, phân tích hệ thống và quy trình nghiệp vụ.",
-      "avatar": "YN",
+      "avatar": "PY",
       "savedPostIds": [],
-      "postLimit": 5,
       "createdAt": "2026-04-18T08:07:00.000Z",
-      "updatedAt": "2026-04-19T08:00:00.000Z"
+      "updatedAt": "2026-04-20T14:57:07.174Z"
     },
     {
       "id": "user_5",
@@ -127,9 +126,8 @@
       "bio": "",
       "avatar": "MB",
       "savedPostIds": [],
-      "postLimit": 5,
       "createdAt": "2026-04-19T09:32:41.141Z",
-      "updatedAt": "2026-04-20T04:49:55.306Z"
+      "updatedAt": "2026-04-20T12:16:22.873Z"
     }
   ],
   "posts": [
@@ -177,28 +175,12 @@
       "content": "Khi trình bày use case, cần tách rõ actor, điều kiện vào, điều kiện ra và luồng chính.\n\nVới sơ đồ dữ liệu, chỉ giữ những thực thể cần thiết để tránh rối. Nếu đề tài có phân quyền admin và sinh viên, nên mô tả riêng quyền từng vai trò ngay từ đầu để backend và frontend bám đúng.",
       "categoryId": "cat_3",
       "authorId": "user_4",
-      "status": "pending",
+      "status": "approved",
       "imageUrl": "",
       "likes": [],
       "savedBy": [],
       "createdAt": "2026-04-19T05:45:00.000Z",
-      "updatedAt": "2026-04-19T05:45:00.000Z"
-    },
-    {
-      "id": "post_6",
-      "title": "bạo lực học đường",
-      "summary": "học sinh chém nhau đứt lìa 1 cánh tay máu tung tóe",
-      "content": "tôi thấy 1 cậu học sinh cầm dao đuổi chém đứt lìa 1 cánh tay 1 cậu học sinh khác máu chảy thành dòng",
-      "categoryId": "cat_2",
-      "authorId": "user_5",
-      "status": "approved",
-      "imageUrl": "",
-      "moderationReasons": [],
-      "moderationSeverity": "low",
-      "likes": [],
-      "savedBy": [],
-      "createdAt": "2026-04-19T16:49:38.361Z",
-      "updatedAt": "2026-04-19T16:49:38.361Z"
+      "updatedAt": "2026-04-20T07:51:56.993Z"
     },
     {
       "id": "post_7",
@@ -211,28 +193,46 @@
       "imageUrl": "/uploads/posts/1776618770177-22-0835898e.png",
       "moderationReasons": [],
       "moderationSeverity": "low",
-      "likes": [],
+      "likes": [
+        "user_1"
+      ],
       "savedBy": [],
       "createdAt": "2026-04-19T17:12:50.180Z",
-      "updatedAt": "2026-04-19T17:12:50.180Z"
+      "updatedAt": "2026-04-20T06:24:37.638Z"
     },
     {
-      "id": "post_9",
-      "title": "1 thằng ngu",
-      "summary": "1 thằng ngu",
+      "id": "post_10",
+      "title": "aâ",
+      "summary": "aaaa",
       "content": "aaaa",
       "categoryId": "cat_1",
       "authorId": "user_5",
-      "status": "pending",
+      "status": "approved",
       "imageUrl": "",
-      "moderationReasons": [
-        "Ngôn từ xúc phạm"
-      ],
-      "moderationSeverity": "medium",
+      "moderationReasons": [],
+      "moderationSeverity": "low",
       "likes": [],
       "savedBy": [],
-      "createdAt": "2026-04-19T17:15:19.591Z",
-      "updatedAt": "2026-04-19T17:15:19.591Z"
+      "createdAt": "2026-04-20T05:13:55.118Z",
+      "updatedAt": "2026-04-20T05:13:55.118Z"
+    },
+    {
+      "id": "post_11",
+      "title": "aaaa",
+      "summary": "aaaaaá",
+      "content": "aaaaaá",
+      "categoryId": "cat_1",
+      "authorId": "user_5",
+      "status": "approved",
+      "imageUrl": "",
+      "moderationReasons": [],
+      "moderationSeverity": "low",
+      "likes": [
+        "user_1"
+      ],
+      "savedBy": [],
+      "createdAt": "2026-04-20T05:14:27.764Z",
+      "updatedAt": "2026-04-20T07:42:05.288Z"
     }
   ],
   "comments": [
@@ -251,6 +251,22 @@
       "content": "Nếu có thêm luồng report comment thì nên tách rõ schema ngay từ đầu để admin xử lý dễ hơn.",
       "createdAt": "2026-04-19T02:30:00.000Z",
       "updatedAt": "2026-04-19T02:30:00.000Z"
+    },
+    {
+      "id": "comment_3",
+      "postId": "post_7",
+      "authorId": "user_1",
+      "content": "đẹp voãi",
+      "createdAt": "2026-04-20T06:24:44.760Z",
+      "updatedAt": "2026-04-20T06:24:44.760Z"
+    },
+    {
+      "id": "comment_4",
+      "postId": "post_11",
+      "authorId": "user_1",
+      "content": "voãi",
+      "createdAt": "2026-04-20T07:42:08.801Z",
+      "updatedAt": "2026-04-20T07:42:08.801Z"
     }
   ],
   "reports": [
@@ -262,9 +278,21 @@
       "reason": "Cần kiểm tra lại nội dung trước khi duyệt",
       "note": "Bài viết còn hơi ngắn, nên xem kỹ trước khi công khai.",
       "severity": "low",
-      "status": "pending",
+      "status": "resolved",
       "createdAt": "2026-04-19T06:10:00.000Z",
-      "updatedAt": "2026-04-19T06:10:00.000Z"
+      "updatedAt": "2026-04-20T06:29:47.718Z"
+    },
+    {
+      "id": "report_2",
+      "targetType": "post",
+      "targetId": "post_1",
+      "reporterId": "user_5",
+      "reason": "Spam / quảng cáo",
+      "note": "",
+      "severity": "medium",
+      "status": "resolved",
+      "createdAt": "2026-04-20T06:30:32.840Z",
+      "updatedAt": "2026-04-20T06:31:05.540Z"
     }
   ],
   "postDeletionLogs": [
@@ -279,6 +307,734 @@
       "action": "delete",
       "reason": "Bài viết có nội dung xúc phạm",
       "createdAt": "2026-04-19T17:35:02.592Z"
+    },
+    {
+      "id": "delete_log_2",
+      "postId": "post_6",
+      "postTitle": "bạo lực học đường",
+      "postSummary": "học sinh chém nhau đứt lìa 1 cánh tay máu tung tóe",
+      "authorId": "user_5",
+      "deletedById": "user_1",
+      "deletedByRole": "admin",
+      "action": "delete",
+      "reason": "Bài viết mang tính bạo lực",
+      "violationTerms": [
+        "chém"
+      ],
+      "createdAt": "2026-04-20T06:25:37.590Z"
+    },
+    {
+      "id": "delete_log_3",
+      "postId": "post_12",
+      "postTitle": "ssss",
+      "postSummary": "ssssss",
+      "authorId": "user_5",
+      "deletedById": "user_1",
+      "deletedByRole": "admin",
+      "action": "delete",
+      "reason": "Bài viết spam hoặc sai mục đích diễn đàn",
+      "violationTerms": [],
+      "createdAt": "2026-04-20T06:25:57.754Z"
+    },
+    {
+      "id": "delete_log_4",
+      "postId": "post_13",
+      "postTitle": "chém bay đầu",
+      "postSummary": "chém chém chém",
+      "authorId": "user_5",
+      "deletedById": "user_1",
+      "deletedByRole": "admin",
+      "action": "reject",
+      "reason": "Bài viết mang tính bạo lực",
+      "violationTerms": [],
+      "createdAt": "2026-04-20T07:51:42.365Z"
+    },
+    {
+      "id": "delete_log_5",
+      "postId": "post_9",
+      "postTitle": "1 thằng ngu",
+      "postSummary": "1 thằng ngu",
+      "authorId": "user_5",
+      "deletedById": "user_1",
+      "deletedByRole": "admin",
+      "action": "reject",
+      "reason": "Bài viết có nội dung xúc phạm",
+      "violationTerms": [
+        "ngu"
+      ],
+      "createdAt": "2026-04-20T07:51:53.783Z"
+    }
+  ],
+  "customModerationTerms": [
+    {
+      "id": "term_1",
+      "phrase": "chém",
+      "normalizedPhrase": "chem",
+      "category": "Bạo lực hoặc máu me",
+      "severity": "high",
+      "sourceReason": "Bài viết mang tính bạo lực",
+      "sourcePostId": "post_6",
+      "createdById": "user_1",
+      "createdAt": "2026-04-20T06:25:37.589Z"
+    },
+    {
+      "id": "term_2",
+      "phrase": "ngu",
+      "normalizedPhrase": "ngu",
+      "category": "Ngôn từ xúc phạm",
+      "severity": "medium",
+      "sourceReason": "Bài viết có nội dung xúc phạm",
+      "sourcePostId": "post_9",
+      "createdById": "user_1",
+      "createdAt": "2026-04-20T07:51:53.783Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif_1",
+      "userId": "user_5",
+      "type": "post_like",
+      "title": "Bài viết có lượt thích mới",
+      "message": "Admin vừa thích bài \"aaaa\".",
+      "actionPath": "/profile",
+      "severity": "info",
+      "entityType": "post",
+      "entityId": "post_11",
+      "actorId": "user_1",
+      "createdAt": "2026-04-20T07:42:05.288Z",
+      "updatedAt": "2026-04-20T09:53:46.701Z",
+      "readAt": "2026-04-20T09:53:46.701Z"
+    },
+    {
+      "id": "notif_2",
+      "userId": "user_5",
+      "type": "post_comment",
+      "title": "Bài viết có bình luận mới",
+      "message": "Admin vừa bình luận trong bài \"aaaa\".",
+      "actionPath": "/profile",
+      "severity": "info",
+      "entityType": "post",
+      "entityId": "post_11",
+      "actorId": "user_1",
+      "createdAt": "2026-04-20T07:42:08.801Z",
+      "updatedAt": "2026-04-20T09:53:46.701Z",
+      "readAt": "2026-04-20T09:53:46.701Z"
+    },
+    {
+      "id": "notif_3",
+      "userId": "user_5",
+      "type": "post_pending",
+      "title": "Bài viết đang chờ kiểm duyệt",
+      "message": "Bài \"chém bay đầu\" có dấu hiệu nhạy cảm và đã được chuyển đến admin để xem xét.",
+      "actionPath": "/profile",
+      "severity": "danger",
+      "entityType": "post",
+      "entityId": "post_13",
+      "actorId": "",
+      "createdAt": "2026-04-20T07:50:42.330Z",
+      "updatedAt": "2026-04-20T09:53:46.701Z",
+      "readAt": "2026-04-20T09:53:46.701Z"
+    },
+    {
+      "id": "notif_4",
+      "userId": "user_1",
+      "type": "admin_pending_post",
+      "title": "Có bài viết cần duyệt",
+      "message": "Mít Tơ Bít vừa đăng \"chém bay đầu\" và bài đang chờ admin kiểm duyệt.",
+      "actionPath": "/admin/pending-posts",
+      "severity": "danger",
+      "entityType": "post",
+      "entityId": "post_13",
+      "actorId": "user_5",
+      "createdAt": "2026-04-20T07:50:42.330Z",
+      "updatedAt": "2026-04-20T07:51:21.317Z",
+      "readAt": "2026-04-20T07:51:21.317Z"
+    },
+    {
+      "id": "notif_5",
+      "userId": "user_5",
+      "type": "post_rejected",
+      "title": "Bài viết đã bị từ chối",
+      "message": "Bài \"chém bay đầu\" đã bị admin gỡ trong bước kiểm duyệt. Lý do: Bài viết mang tính bạo lực.",
+      "actionPath": "/profile",
+      "severity": "danger",
+      "entityType": "post",
+      "entityId": "post_13",
+      "actorId": "user_1",
+      "createdAt": "2026-04-20T07:51:42.365Z",
+      "updatedAt": "2026-04-20T09:53:46.701Z",
+      "readAt": "2026-04-20T09:53:46.701Z"
+    },
+    {
+      "id": "notif_6",
+      "userId": "user_5",
+      "type": "post_rejected",
+      "title": "Bài viết đã bị từ chối",
+      "message": "Bài \"1 thằng ngu\" đã bị admin gỡ trong bước kiểm duyệt. Lý do: Bài viết có nội dung xúc phạm.",
+      "actionPath": "/profile",
+      "severity": "danger",
+      "entityType": "post",
+      "entityId": "post_9",
+      "actorId": "user_1",
+      "createdAt": "2026-04-20T07:51:53.783Z",
+      "updatedAt": "2026-04-20T09:53:46.701Z",
+      "readAt": "2026-04-20T09:53:46.701Z"
+    },
+    {
+      "id": "notif_7",
+      "userId": "user_4",
+      "type": "post_approved",
+      "title": "Bài viết đã được duyệt",
+      "message": "Bài \"Kinh nghiệm trình bày use case và sơ đồ dữ liệu khi làm đồ án\" đã được admin phê duyệt và đang hiển thị trên diễn đàn.",
+      "actionPath": "/profile",
+      "severity": "success",
+      "entityType": "post",
+      "entityId": "post_3",
+      "actorId": "",
+      "createdAt": "2026-04-20T07:51:56.993Z",
+      "updatedAt": "2026-04-20T07:51:56.993Z",
+      "readAt": null
+    }
+  ],
+  "passwordResetTokens": [
+    {
+      "id": "reset_token_1",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "2d7e971af32939f3db8865726f559427b8a90e3891b55e8d81110fea0e68edcb",
+      "createdAt": "2026-04-20T13:53:11.286Z",
+      "updatedAt": "2026-04-20T13:53:12.735Z",
+      "expiresAt": "2026-04-20T14:08:11.286Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T13:53:12.735Z"
+    },
+    {
+      "id": "reset_token_2",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "84a5d3fa9b90f98f60b352dd13f3481b0e9ad258feb1ca60a2563b5bf2398972",
+      "createdAt": "2026-04-20T14:07:11.295Z",
+      "updatedAt": "2026-04-20T14:07:12.441Z",
+      "expiresAt": "2026-04-20T14:22:11.294Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:07:12.441Z"
+    },
+    {
+      "id": "reset_token_3",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "cd9e952df5ae0b0b204d5fb2a165c8a7216d1e77842d1044b33f02cf434f5961",
+      "createdAt": "2026-04-20T14:07:12.441Z",
+      "updatedAt": "2026-04-20T14:08:20.213Z",
+      "expiresAt": "2026-04-20T14:22:12.441Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:08:20.213Z"
+    },
+    {
+      "id": "reset_token_4",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "5d34194f5d592fe5c99ed7d52c915a9102e941babfc8e442cb37e528d4c4c438",
+      "createdAt": "2026-04-20T14:08:20.213Z",
+      "updatedAt": "2026-04-20T14:08:21.375Z",
+      "expiresAt": "2026-04-20T14:23:20.212Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:08:21.375Z"
+    },
+    {
+      "id": "reset_token_5",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "087866dfa82048ebb72634de1e3b5e4d3eb2a96c2a7e5084d2a29a3d27dab3c1",
+      "createdAt": "2026-04-20T14:08:21.375Z",
+      "updatedAt": "2026-04-20T14:09:33.040Z",
+      "expiresAt": "2026-04-20T14:23:21.375Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:09:33.040Z"
+    },
+    {
+      "id": "reset_token_6",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "0d682a3f248f87e0df44cbc2f86611f230d6dc476eb76d2b78b77086b2cccdc1",
+      "createdAt": "2026-04-20T14:09:33.040Z",
+      "updatedAt": "2026-04-20T14:17:09.196Z",
+      "expiresAt": "2026-04-20T14:24:33.040Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:17:09.196Z"
+    },
+    {
+      "id": "reset_token_7",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "350aa06a93a145f88956447ab4a5734551c715c6787a43d22dcc218edfd59290",
+      "createdAt": "2026-04-20T14:17:09.196Z",
+      "updatedAt": "2026-04-20T14:17:54.191Z",
+      "expiresAt": "2026-04-20T14:32:09.195Z",
+      "consumedAt": "2026-04-20T14:17:54.191Z",
+      "revokedAt": null
+    },
+    {
+      "id": "reset_token_8",
+      "userId": "user_4",
+      "email": "1721031394@dntu.edu.vn",
+      "tokenHash": "b189279ff6046d21bc55117ef26a6df5b57051c760b5eecf9d7844d74526ddb3",
+      "createdAt": "2026-04-20T14:27:03.719Z",
+      "updatedAt": "2026-04-20T14:27:04.889Z",
+      "expiresAt": "2026-04-20T14:42:03.718Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:27:04.889Z"
+    },
+    {
+      "id": "reset_token_9",
+      "userId": "user_4",
+      "email": "1721031394@dntu.edu.vn",
+      "tokenHash": "b5ac231ce25c40ac05cf98a480904cca22378f70f34810f6457d988ab1cd775c",
+      "createdAt": "2026-04-20T14:27:04.889Z",
+      "updatedAt": "2026-04-20T14:57:07.175Z",
+      "expiresAt": "2026-04-20T14:42:04.888Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:57:07.175Z"
+    },
+    {
+      "id": "reset_token_10",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "5ba0846520dac0a87a7f434391bb2e59cf9b73f689fa9620778e55eaa9bbdd59",
+      "createdAt": "2026-04-20T14:33:35.439Z",
+      "updatedAt": "2026-04-20T14:33:36.607Z",
+      "expiresAt": "2026-04-20T14:48:35.439Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:33:36.607Z"
+    },
+    {
+      "id": "reset_token_11",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "b4a06cf7fbdb476c3fb15802dc7518814b70a020d008b23b9047ce01312c7c6b",
+      "createdAt": "2026-04-20T14:33:36.607Z",
+      "updatedAt": "2026-04-20T14:35:45.509Z",
+      "expiresAt": "2026-04-20T14:48:36.607Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:35:45.509Z"
+    },
+    {
+      "id": "reset_token_12",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "be1fa0c775123636ba6211e854ff2d1728da83e49831a5ba86c934edd0b04308",
+      "createdAt": "2026-04-20T14:35:45.509Z",
+      "updatedAt": "2026-04-20T14:35:46.668Z",
+      "expiresAt": "2026-04-20T14:50:45.508Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:35:46.668Z"
+    },
+    {
+      "id": "reset_token_13",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "dbe0039f71f71b66024c1cda729ea25d78dafb046324e1e618099e4b86f07a40",
+      "createdAt": "2026-04-20T14:35:46.668Z",
+      "updatedAt": "2026-04-20T14:36:47.390Z",
+      "expiresAt": "2026-04-20T14:50:46.667Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:36:47.390Z"
+    },
+    {
+      "id": "reset_token_14",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "3675388935a51fe649835d31b89669b612b622a351fcb94e8ec1a80d5e30326a",
+      "createdAt": "2026-04-20T14:36:47.390Z",
+      "updatedAt": "2026-04-20T14:36:48.549Z",
+      "expiresAt": "2026-04-20T14:51:47.389Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:36:48.549Z"
+    },
+    {
+      "id": "reset_token_15",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "48b0507011b3166fa7a7147f258c60d04492b74b80959c0d2ae1a61efe175406",
+      "createdAt": "2026-04-20T14:36:48.549Z",
+      "updatedAt": "2026-04-20T14:36:50.248Z",
+      "expiresAt": "2026-04-20T14:51:48.548Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:36:50.248Z"
+    },
+    {
+      "id": "reset_token_16",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "ae7a2c8725133ea9d37bd37ee947583988a10c2b61ee6216080a242d897cadc6",
+      "createdAt": "2026-04-20T14:36:50.248Z",
+      "updatedAt": "2026-04-20T14:36:51.672Z",
+      "expiresAt": "2026-04-20T14:51:50.248Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:36:51.672Z"
+    },
+    {
+      "id": "reset_token_17",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "83e42d62d4bb8572143ddcd23ae4b4fdd4c0d9f610af47c6d7b08bbb799fe576",
+      "createdAt": "2026-04-20T14:36:51.672Z",
+      "updatedAt": "2026-04-20T14:36:52.971Z",
+      "expiresAt": "2026-04-20T14:51:51.672Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:36:52.971Z"
+    },
+    {
+      "id": "reset_token_18",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "0d5a6933eafc1c56319459028cead0bf5df415bbfe48b5e72ebad7526c465a0d",
+      "createdAt": "2026-04-20T14:36:52.971Z",
+      "updatedAt": "2026-04-20T14:36:54.031Z",
+      "expiresAt": "2026-04-20T14:51:52.970Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:36:54.031Z"
+    },
+    {
+      "id": "reset_token_19",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "fd601fb498500a92d83422283214a2b2a4e6d0dbf91cd9fa22157600d29cd42a",
+      "createdAt": "2026-04-20T14:36:54.031Z",
+      "updatedAt": "2026-04-20T14:36:55.331Z",
+      "expiresAt": "2026-04-20T14:51:54.030Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:36:55.331Z"
+    },
+    {
+      "id": "reset_token_20",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "61368ae72c8f3fe4fc5eac744bd21ce1b82aed426bfe9e2536e9975183a588c0",
+      "createdAt": "2026-04-20T14:36:55.331Z",
+      "updatedAt": "2026-04-20T14:36:57.467Z",
+      "expiresAt": "2026-04-20T14:51:55.331Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:36:57.467Z"
+    },
+    {
+      "id": "reset_token_21",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "9a4cd7edec0a975c624da3032b92d7deec8761f32152b286552bd6ca06f6af13",
+      "createdAt": "2026-04-20T14:36:57.467Z",
+      "updatedAt": "2026-04-20T14:36:58.702Z",
+      "expiresAt": "2026-04-20T14:51:57.467Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:36:58.702Z"
+    },
+    {
+      "id": "reset_token_22",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "c7c2dc302b9cb37c2d262becd54b9012b78a7d0a0bb6e34b129ce9bef330c09c",
+      "createdAt": "2026-04-20T14:36:58.702Z",
+      "updatedAt": "2026-04-20T14:36:59.782Z",
+      "expiresAt": "2026-04-20T14:51:58.701Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:36:59.782Z"
+    },
+    {
+      "id": "reset_token_23",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "836e93a264c822a74f0b21d41bf983d7e70e153b3f001fa35fa7d5229cde7670",
+      "createdAt": "2026-04-20T14:36:59.782Z",
+      "updatedAt": "2026-04-20T14:37:01.050Z",
+      "expiresAt": "2026-04-20T14:51:59.781Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:37:01.050Z"
+    },
+    {
+      "id": "reset_token_24",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "2822eb16d3acd9fd265c5b4d7566b62056d94c12ab3cd38167762e635faa5687",
+      "createdAt": "2026-04-20T14:37:01.050Z",
+      "updatedAt": "2026-04-20T14:37:02.484Z",
+      "expiresAt": "2026-04-20T14:52:01.050Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:37:02.484Z"
+    },
+    {
+      "id": "reset_token_25",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "d760d7aafa4c4e311225c0e1be1054d40ee262154fcca9e172848ce3e777e8e6",
+      "createdAt": "2026-04-20T14:37:02.484Z",
+      "updatedAt": "2026-04-20T14:37:03.786Z",
+      "expiresAt": "2026-04-20T14:52:02.484Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:37:03.786Z"
+    },
+    {
+      "id": "reset_token_26",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "e9b413ba21e90c40ab3b225a556e09ee1eff5d13d4f77b32d122aa13daaebe11",
+      "createdAt": "2026-04-20T14:37:03.786Z",
+      "updatedAt": "2026-04-20T14:37:04.891Z",
+      "expiresAt": "2026-04-20T14:52:03.785Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:37:04.891Z"
+    },
+    {
+      "id": "reset_token_27",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "ad9a768c8323c0f7325b7e4da03559193694fe921942e0db2bc755ce557ec569",
+      "createdAt": "2026-04-20T14:37:04.891Z",
+      "updatedAt": "2026-04-20T14:37:06.038Z",
+      "expiresAt": "2026-04-20T14:52:04.890Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:37:06.038Z"
+    },
+    {
+      "id": "reset_token_28",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "0dd87e21fd746fbd04458cf35a1804155008718a389496f8bf9d1f16882e6343",
+      "createdAt": "2026-04-20T14:37:06.038Z",
+      "updatedAt": "2026-04-20T14:37:08.139Z",
+      "expiresAt": "2026-04-20T14:52:06.038Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:37:08.139Z"
+    },
+    {
+      "id": "reset_token_29",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "9a8eb0684d92310e5bf06ae1ed54e0528a4341a40b752b75ec2eb2d1163e1551",
+      "createdAt": "2026-04-20T14:37:08.139Z",
+      "updatedAt": "2026-04-20T14:38:20.141Z",
+      "expiresAt": "2026-04-20T14:52:08.138Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:38:20.141Z"
+    },
+    {
+      "id": "reset_token_30",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "55ea89ae44d54e17d9de1e2f6b1be53a48789cb91f18cfb6ac6f0e8b4a026f47",
+      "createdAt": "2026-04-20T14:38:20.141Z",
+      "updatedAt": "2026-04-20T14:38:21.247Z",
+      "expiresAt": "2026-04-20T14:53:20.140Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:38:21.247Z"
+    },
+    {
+      "id": "reset_token_31",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "fe0333056a9d7f50af257ec0261d5fdfe174e2355b72ce7c4811e173e4b4c017",
+      "createdAt": "2026-04-20T14:38:21.247Z",
+      "updatedAt": "2026-04-20T14:39:26.547Z",
+      "expiresAt": "2026-04-20T14:53:21.247Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:39:26.547Z"
+    },
+    {
+      "id": "reset_token_32",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "becca42700d7222a093bd5c3fa37119c155b9e304d413f41fc3a3e7942dccd7e",
+      "createdAt": "2026-04-20T14:39:26.547Z",
+      "updatedAt": "2026-04-20T14:40:03.844Z",
+      "expiresAt": "2026-04-20T14:54:26.546Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:40:03.844Z"
+    },
+    {
+      "id": "reset_token_33",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "3f4a2bf09ff0336571a210b79b0203a5d3459419ac7a3150477a79ba18edd8f7",
+      "createdAt": "2026-04-20T14:40:03.844Z",
+      "updatedAt": "2026-04-20T14:40:45.659Z",
+      "expiresAt": "2026-04-20T14:55:03.843Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:40:45.659Z"
+    },
+    {
+      "id": "reset_token_34",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "9cf3b0bdec357bfe19ae65622fa95fc13cac4b12dc5107b204bb479346ec488c",
+      "createdAt": "2026-04-20T14:40:45.659Z",
+      "updatedAt": "2026-04-20T14:41:00.129Z",
+      "expiresAt": "2026-04-20T14:55:45.658Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:41:00.129Z"
+    },
+    {
+      "id": "reset_token_35",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "7d293a89ccaa201bf471218a267a53ffcfcd809743f02070c4399a26337bb5a5",
+      "createdAt": "2026-04-20T14:41:00.129Z",
+      "updatedAt": "2026-04-20T14:42:57.465Z",
+      "expiresAt": "2026-04-20T14:56:00.129Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:42:57.465Z"
+    },
+    {
+      "id": "reset_token_36",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "9636a1db8f57a67f6e12b03f34a824398360d78007c7162943ed0f81912179d8",
+      "createdAt": "2026-04-20T14:42:57.465Z",
+      "updatedAt": "2026-04-20T14:42:58.603Z",
+      "expiresAt": "2026-04-20T14:57:57.464Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:42:58.603Z"
+    },
+    {
+      "id": "reset_token_37",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "28c0c4978030992afe732a77cca06a54b92789163bdf8818f6b35008b74a930c",
+      "createdAt": "2026-04-20T14:42:58.603Z",
+      "updatedAt": "2026-04-20T14:44:14.267Z",
+      "expiresAt": "2026-04-20T14:57:58.602Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:44:14.267Z"
+    },
+    {
+      "id": "reset_token_38",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "3db24dd1233fc2ade854238a30b2dc59cef37286f102070db0c1caec58149861",
+      "createdAt": "2026-04-20T14:44:14.267Z",
+      "updatedAt": "2026-04-20T14:44:15.427Z",
+      "expiresAt": "2026-04-20T14:59:14.266Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:44:15.427Z"
+    },
+    {
+      "id": "reset_token_39",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "0c260a394032f85b2f166c48cd6702d532bb47bd848ef85b6e0995b3caf732b0",
+      "createdAt": "2026-04-20T14:44:15.427Z",
+      "updatedAt": "2026-04-20T14:45:16.800Z",
+      "expiresAt": "2026-04-20T14:59:15.426Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:45:16.800Z"
+    },
+    {
+      "id": "reset_token_40",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "93c1d6b5b5aef09c77f6e11bc0e6d0a50296462b6450f6d3c157551d704738cd",
+      "createdAt": "2026-04-20T14:45:16.800Z",
+      "updatedAt": "2026-04-20T14:45:17.965Z",
+      "expiresAt": "2026-04-20T15:00:16.799Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:45:17.965Z"
+    },
+    {
+      "id": "reset_token_41",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "a420def9500e1d6523cea2326c3da1135cc6228eb14c084b8ec0364ba3963020",
+      "createdAt": "2026-04-20T14:45:17.965Z",
+      "updatedAt": "2026-04-20T14:45:57.904Z",
+      "expiresAt": "2026-04-20T15:00:17.964Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:45:57.904Z"
+    },
+    {
+      "id": "reset_token_42",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "36d3ccd8e87cd2158952742665e84ced694291d263d0a6f06de2e30b87cf6494",
+      "createdAt": "2026-04-20T14:45:57.904Z",
+      "updatedAt": "2026-04-20T14:45:59.086Z",
+      "expiresAt": "2026-04-20T15:00:57.904Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:45:59.086Z"
+    },
+    {
+      "id": "reset_token_43",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "6d3c79f6a9cb2484f4cd728eda65fb748875e8fe212f6b0dace84d32f2d4a91a",
+      "createdAt": "2026-04-20T14:45:59.086Z",
+      "updatedAt": "2026-04-20T14:48:44.492Z",
+      "expiresAt": "2026-04-20T15:00:59.086Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:48:44.492Z"
+    },
+    {
+      "id": "reset_token_44",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "7b432c55f36b26607b83c075da0b8bf5835bd0d2df9e6017d1705e8bb4687c79",
+      "createdAt": "2026-04-20T14:48:44.492Z",
+      "updatedAt": "2026-04-20T14:52:44.580Z",
+      "expiresAt": "2026-04-20T15:03:44.492Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:52:44.580Z"
+    },
+    {
+      "id": "reset_token_45",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "c1b683ad15566ef07d54ab714b8df00a1370c956d08d937d03c1b439d5525459",
+      "createdAt": "2026-04-20T14:52:44.580Z",
+      "updatedAt": "2026-04-20T14:52:45.731Z",
+      "expiresAt": "2026-04-20T15:07:44.579Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:52:45.731Z"
+    },
+    {
+      "id": "reset_token_46",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "5574b5cfef0748d5613871e4f591cce5385a92a38cc7293cb463e4c874ea35c3",
+      "createdAt": "2026-04-20T14:52:45.731Z",
+      "updatedAt": "2026-04-20T14:56:12.611Z",
+      "expiresAt": "2026-04-20T15:07:45.731Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:56:12.611Z"
+    },
+    {
+      "id": "reset_token_47",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "f93abd9b089bda5be60ff5fa2f83fd70d3230653683e8555120c2c90a314ebc1",
+      "createdAt": "2026-04-20T14:56:12.611Z",
+      "updatedAt": "2026-04-20T14:56:40.122Z",
+      "expiresAt": "2026-04-20T15:11:12.610Z",
+      "consumedAt": null,
+      "revokedAt": "2026-04-20T14:56:40.122Z"
+    },
+    {
+      "id": "reset_token_48",
+      "userId": "user_2",
+      "email": "1721031253@dntu.edu.vn",
+      "tokenHash": "f2982437a19c5c735edaad6f5d1643e03ef6b6e925deb68154087fed9de9830b",
+      "createdAt": "2026-04-20T14:56:40.122Z",
+      "updatedAt": "2026-04-20T14:56:40.122Z",
+      "expiresAt": "2026-04-20T15:11:40.122Z",
+      "consumedAt": null,
+      "revokedAt": null
+    },
+    {
+      "id": "reset_token_49",
+      "userId": "user_4",
+      "email": "1721031394@dntu.edu.vn",
+      "tokenHash": "3f9b48a70f25a1abf4bc467ffceca8b4818cbdc835ffa4967998318ea396449c",
+      "createdAt": "2026-04-20T14:57:07.175Z",
+      "updatedAt": "2026-04-20T14:57:07.175Z",
+      "expiresAt": "2026-04-20T15:12:07.175Z",
+      "consumedAt": null,
+      "revokedAt": null
     }
   ]
 }

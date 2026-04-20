@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 263 664" role="img" aria-labelledby="title">
+  <title>DNTU Logo</title>
+  <defs>
+    <style>
+      .red { fill: #cf1821; }
+      .blue { fill: #2c7fc4; }
+      .label {
+        fill: #cf1821;
+        font-family: "Times New Roman", Georgia, serif;
+        font-size: 88px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+    </style>
+  </defs>
+
+  <path class="red" d="M9 95 117 44c9-4 19 0 23 8 4 9 0 19-9 23L23 126c-9 4-19 0-23-8-4-9 0-19 9-23Z" />
+  <circle class="red" cx="100" cy="117" r="59" />
+
+  <path
+    class="red"
+    d="M86 178
+       C162 201 234 303 236 468
+       C236 522 230 573 220 618
+       H180
+       C191 572 196 523 195 471
+       C191 344 144 250 81 197
+       Z"
+  />
+
+  <circle class="blue" cx="83" cy="267" r="38" />
+
+  <path
+    class="red"
+    d="M69 315
+       C119 331 166 401 167 503
+       C167 547 160 586 149 618
+       H113
+       C121 585 126 548 125 507
+       C123 425 94 362 60 325
+       Z"
+  />
+
+  <circle class="blue" cx="33" cy="401" r="29" />
+
+  <path
+    class="red"
+    d="M25 452
+       C58 465 94 517 95 587
+       C95 598 94 608 91 618
+       H63
+       C67 607 69 596 69 584
+       C68 529 51 485 22 459
+       Z"
+  />
+
+  <text class="label" x="2" y="656">DNTU</text>
+</svg>

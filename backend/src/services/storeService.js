@@ -53,6 +53,113 @@ function ensureCounter(state, key) {
   }
 }
 
+function createPasswordResetToken({ userId, email, tokenHash, expiresAt }) {
+  return withState((state) => {
+    ensureArray(state, "passwordResetTokens");
+    const timestamp = nowIso();
+
+    state.passwordResetTokens.forEach((item) => {
+      if (
+        item.email?.toLowerCase() === email.toLowerCase() &&
+        !item.consumedAt &&
+        !item.revokedAt
+      ) {
+        item.revokedAt = timestamp;
+        item.updatedAt = timestamp;
+      }
+    });
+
+    const resetToken = {
+      id: nextId(state, "passwordResetToken", "reset_token"),
+      userId,
+      email,
+      tokenHash,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      expiresAt,
+      consumedAt: null,
+      revokedAt: null,
+    };
+
+    state.passwordResetTokens.push(resetToken);
+    return clone(resetToken);
+  });
+}
+
+function revokePasswordResetToken(tokenId) {
+  return withState((state) => {
+    ensureArray(state, "passwordResetTokens");
+    const resetToken = state.passwordResetTokens.find((item) => item.id === tokenId);
+
+    if (!resetToken) {
+      return null;
+    }
+
+    if (!resetToken.consumedAt && !resetToken.revokedAt) {
+      const timestamp = nowIso();
+      resetToken.revokedAt = timestamp;
+      resetToken.updatedAt = timestamp;
+    }
+
+    return clone(resetToken);
+  });
+}
+
+function validatePasswordResetToken({ tokenHash }) {
+  const state = readState();
+  ensureArray(state, "passwordResetTokens");
+  const now = Date.now();
+
+  const resetToken = state.passwordResetTokens
+    .slice()
+    .sort((left, right) => new Date(right.createdAt) - new Date(left.createdAt))
+    .find(
+      (item) =>
+        item.tokenHash === tokenHash &&
+        !item.consumedAt &&
+        !item.revokedAt
+    );
+
+  if (!resetToken) {
+    throw new Error("RESET_TOKEN_INVALID");
+  }
+
+  if (new Date(resetToken.expiresAt).getTime() <= now) {
+    throw new Error("RESET_TOKEN_EXPIRED");
+  }
+
+  return clone(resetToken);
+}
+
+function markPasswordResetTokenConsumed(tokenId) {
+  return withState((state) => {
+    ensureArray(state, "passwordResetTokens");
+    const resetToken = state.passwordResetTokens.find((item) => item.id === tokenId);
+
+    if (!resetToken) {
+      throw new Error("RESET_TOKEN_NOT_FOUND");
+    }
+
+    const timestamp = nowIso();
+    resetToken.consumedAt = timestamp;
+    resetToken.updatedAt = timestamp;
+
+    state.passwordResetTokens.forEach((item) => {
+      if (
+        item.id !== tokenId &&
+        item.email?.toLowerCase() === resetToken.email?.toLowerCase() &&
+        !item.consumedAt &&
+        !item.revokedAt
+      ) {
+        item.revokedAt = timestamp;
+        item.updatedAt = timestamp;
+      }
+    });
+
+    return clone(resetToken);
+  });
+}
+
 function normalizePaginationValue(value, fallback) {
   const parsed = Number.parseInt(value, 10);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
@@ -115,6 +222,26 @@ function getUserByFirebaseUid(state, firebaseUid) {
   return state.users.find((item) => item.firebaseUid === firebaseUid) || null;
 }
 
+function buildPublicUserSummary(state, user) {
+  const approvedPostsCount = state.posts.filter(
+    (post) => post.authorId === user.id && post.status === "approved"
+  ).length;
+
+  return {
+    id: user.id,
+    fullName: user.fullName,
+    role: user.role,
+    status: user.status,
+    studentId: user.studentId,
+    faculty: user.faculty,
+    bio: user.bio,
+    avatar: user.avatar,
+    approvedPostsCount,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+  };
+}
+
 function getPostById(state, postId) {
   return state.posts.find((item) => item.id === postId) || null;
 }
@@ -139,7 +266,6 @@ function sanitizeUser(user) {
     faculty: user.faculty,
     bio: user.bio,
     avatar: user.avatar,
-    postLimit: user.postLimit,
     savedPostIds: user.savedPostIds || [],
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
@@ -227,6 +353,93 @@ function buildReportSummary(state, report) {
     createdAt: report.createdAt,
     updatedAt: report.updatedAt,
   };
+}
+
+function buildNotificationSummary(state, notification) {
+  const actor = notification.actorId ? getUserById(state, notification.actorId) : null;
+
+  return {
+    id: notification.id,
+    type: notification.type || "general",
+    title: notification.title || "Thông báo mới",
+    message: notification.message || "",
+    actionPath: notification.actionPath || "",
+    severity: notification.severity || "info",
+    entityType: notification.entityType || "",
+    entityId: notification.entityId || "",
+    read: Boolean(notification.readAt),
+    createdAt: notification.createdAt,
+    updatedAt: notification.updatedAt,
+    readAt: notification.readAt || null,
+    actor: actor
+      ? {
+          id: actor.id,
+          fullName: actor.fullName,
+          avatar: actor.avatar,
+          role: actor.role,
+        }
+      : null,
+  };
+}
+
+function trimNotificationsForUser(state, userId, maxItems = 60) {
+  ensureArray(state, "notifications");
+
+  const notificationsForUser = state.notifications
+    .filter((item) => item.userId === userId)
+    .sort((left, right) => new Date(right.createdAt) - new Date(left.createdAt));
+
+  if (notificationsForUser.length <= maxItems) {
+    return;
+  }
+
+  const keepIds = new Set(notificationsForUser.slice(0, maxItems).map((item) => item.id));
+  state.notifications = state.notifications.filter((item) => item.userId !== userId || keepIds.has(item.id));
+}
+
+function createNotification(state, payload) {
+  ensureArray(state, "notifications");
+
+  const userId = payload.userId || "";
+  const user = getUserById(state, userId);
+
+  if (!user) {
+    return null;
+  }
+
+  const timestamp = nowIso();
+  const notification = {
+    id: nextId(state, "notification", "notif"),
+    userId,
+    type: payload.type || "general",
+    title: String(payload.title || "Thông báo mới").trim(),
+    message: String(payload.message || "").trim(),
+    actionPath: payload.actionPath || "",
+    severity: payload.severity || "info",
+    entityType: payload.entityType || "",
+    entityId: payload.entityId || "",
+    actorId: payload.actorId || "",
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    readAt: null,
+  };
+
+  state.notifications.push(notification);
+  trimNotificationsForUser(state, userId);
+
+  return notification;
+}
+
+function notifyAdmins(state, payload) {
+  return state.users
+    .filter((user) => user.role === "admin" && user.status === "active")
+    .map((user) =>
+      createNotification(state, {
+        ...payload,
+        userId: user.id,
+      })
+    )
+    .filter(Boolean);
 }
 
 function defaultRoleByEmail(email) {
@@ -396,7 +609,6 @@ function upsertUserFromAuth({ firebaseUid, email, displayName }) {
         bio: "",
         avatar: buildAvatar(displayName, email),
         savedPostIds: [],
-        postLimit: derivedRole === "admin" ? 50 : 5,
         createdAt: timestamp,
         updatedAt: timestamp,
       };
@@ -416,8 +628,9 @@ function createManagedUserProfile({ firebaseUid, email, fullName, role, status, 
   return withState((state) => {
     let user = getUserByEmail(state, email) || getUserByFirebaseUid(state, firebaseUid);
     const timestamp = nowIso();
+    const isNewUser = !user;
 
-    if (!user) {
+    if (isNewUser) {
       user = {
         id: nextId(state, "user", "user"),
         firebaseUid,
@@ -430,7 +643,6 @@ function createManagedUserProfile({ firebaseUid, email, fullName, role, status, 
         bio: bio || "",
         avatar: buildAvatar(fullName, email),
         savedPostIds: [],
-        postLimit: role === "admin" ? 50 : 5,
         createdAt: timestamp,
         updatedAt: timestamp,
       };
@@ -444,8 +656,18 @@ function createManagedUserProfile({ firebaseUid, email, fullName, role, status, 
       user.faculty = faculty || user.faculty;
       user.bio = typeof bio === "string" ? bio : user.bio;
       user.avatar = buildAvatar(user.fullName, user.email);
-      user.postLimit = user.role === "admin" ? 50 : 5;
       user.updatedAt = timestamp;
+    }
+
+    if (isNewUser) {
+      createNotification(state, {
+        userId: user.id,
+        type: "account_created",
+        title: "Tài khoản diễn đàn đã sẵn sàng",
+        message: `Admin đã cấp cho bạn tài khoản ${user.email}. Hãy đăng nhập và cập nhật hồ sơ cá nhân.`,
+        actionPath: "/profile",
+        severity: "success",
+      });
     }
 
     return sanitizeUser(user);
@@ -494,6 +716,88 @@ function listUsers() {
     .sort((left, right) => new Date(right.createdAt) - new Date(left.createdAt));
 }
 
+function searchUsers(query = "") {
+  const state = readState();
+  const normalizedQuery = normalizeText(query);
+
+  if (!normalizedQuery || normalizedQuery.length < 2) {
+    return [];
+  }
+
+  return state.users
+    .filter((user) => user.status === "active")
+    .map((user) => {
+      const searchableName = normalizeText(user.fullName);
+      const searchableStudentId = normalizeText(user.studentId || "");
+      const searchableEmail = normalizeText(user.email || "");
+      const matches =
+        searchableName.includes(normalizedQuery) ||
+        searchableStudentId.includes(normalizedQuery) ||
+        searchableEmail.includes(normalizedQuery);
+
+      if (!matches) {
+        return null;
+      }
+
+      let score = 0;
+
+      if (searchableStudentId === normalizedQuery) {
+        score += 120;
+      } else if (searchableStudentId.startsWith(normalizedQuery)) {
+        score += 90;
+      }
+
+      if (searchableName === normalizedQuery) {
+        score += 100;
+      } else if (searchableName.startsWith(normalizedQuery)) {
+        score += 80;
+      } else if (searchableName.includes(normalizedQuery)) {
+        score += 40;
+      }
+
+      if (searchableEmail.startsWith(normalizedQuery)) {
+        score += 30;
+      }
+
+      return {
+        ...buildPublicUserSummary(state, user),
+        score,
+      };
+    })
+    .filter(Boolean)
+    .sort((left, right) => {
+      if (right.score !== left.score) {
+        return right.score - left.score;
+      }
+
+      return left.fullName.localeCompare(right.fullName, "vi");
+    })
+    .slice(0, 8)
+    .map(({ score, ...user }) => user);
+}
+
+function getPublicUserProfile(userId) {
+  const state = readState();
+  const user = getUserById(state, userId);
+
+  if (!user) {
+    return null;
+  }
+
+  const authoredPosts = state.posts
+    .filter((post) => post.authorId === userId && post.status === "approved")
+    .sort((left, right) => new Date(right.createdAt) - new Date(left.createdAt))
+    .map((post) => buildPostSummary(state, post));
+
+  return {
+    ...buildPublicUserSummary(state, user),
+    stats: {
+      approvedPosts: authoredPosts.length,
+    },
+    authoredPosts,
+  };
+}
+
 function updateUserProfile(userId, payload) {
   return withState((state) => {
     const user = getUserById(state, userId);
@@ -531,6 +835,18 @@ function toggleUserStatus(userId) {
 
     user.status = user.status === "locked" ? "active" : "locked";
     user.updatedAt = nowIso();
+
+    createNotification(state, {
+      userId: user.id,
+      type: user.status === "locked" ? "account_locked" : "account_unlocked",
+      title: user.status === "locked" ? "Tài khoản đã bị khóa" : "Tài khoản đã được mở khóa",
+      message:
+        user.status === "locked"
+          ? "Admin đã tạm khóa tài khoản của bạn. Liên hệ quản trị viên nếu bạn cần hỗ trợ."
+          : "Admin đã mở khóa tài khoản của bạn. Bạn có thể tiếp tục sử dụng diễn đàn.",
+      actionPath: "/profile",
+      severity: user.status === "locked" ? "danger" : "success",
+    });
 
     return sanitizeUser(user);
   });
@@ -615,14 +931,6 @@ function createPost({ title, summary, content, categoryId, authorId, imageUrl, i
       throw new Error("USER_NOT_FOUND");
     }
 
-    const activePostsCount = state.posts.filter((post) => post.authorId === authorId).length;
-
-    if (activePostsCount >= user.postLimit) {
-      const error = new Error("POST_LIMIT_REACHED");
-      error.code = "POST_LIMIT_REACHED";
-      throw error;
-    }
-
     const normalizedText = normalizePostText(summary, content);
     const moderation = buildModerationResult(state, {
       title,
@@ -650,6 +958,31 @@ function createPost({ title, summary, content, categoryId, authorId, imageUrl, i
     };
 
     state.posts.push(post);
+
+    if (moderation.status === "pending") {
+      createNotification(state, {
+        userId: authorId,
+        type: "post_pending",
+        title: "Bài viết đang chờ kiểm duyệt",
+        message: `Bài "${post.title}" có dấu hiệu nhạy cảm và đã được chuyển đến admin để xem xét.`,
+        actionPath: "/profile",
+        severity: moderation.severity === "high" ? "danger" : "warning",
+        entityType: "post",
+        entityId: post.id,
+      });
+
+      notifyAdmins(state, {
+        type: "admin_pending_post",
+        title: "Có bài viết cần duyệt",
+        message: `${user.fullName} vừa đăng "${post.title}" và bài đang chờ admin kiểm duyệt.`,
+        actionPath: "/admin/pending-posts",
+        actorId: authorId,
+        severity: moderation.severity === "high" ? "danger" : "warning",
+        entityType: "post",
+        entityId: post.id,
+      });
+    }
+
     return buildPostSummary(state, post);
   });
 }
@@ -666,6 +999,7 @@ function updatePost(postId, actor, payload) {
       throw new Error("FORBIDDEN");
     }
 
+    const previousStatus = post.status;
     const nextTitle = typeof payload.title === "string" && payload.title.trim() ? payload.title.trim() : post.title;
     const nextSummarySource = typeof payload.summary === "string" ? payload.summary : post.summary || post.content;
     const normalizedText = normalizePostText(nextSummarySource, post.content);
@@ -689,6 +1023,33 @@ function updatePost(postId, actor, payload) {
     post.moderationReasons = moderation.reasons;
     post.moderationSeverity = moderation.severity;
     post.updatedAt = nowIso();
+
+    if (post.status === "pending") {
+      createNotification(state, {
+        userId: post.authorId,
+        type: "post_pending",
+        title:
+          previousStatus === "pending"
+            ? "Bài viết vẫn đang chờ kiểm duyệt"
+            : "Bài chỉnh sửa đã chuyển sang chờ kiểm duyệt",
+        message: `Bài "${post.title}" đang chờ admin xem xét trước khi hiển thị lại trên diễn đàn.`,
+        actionPath: "/profile",
+        severity: moderation.severity === "high" ? "danger" : "warning",
+        entityType: "post",
+        entityId: post.id,
+      });
+
+      notifyAdmins(state, {
+        type: "admin_pending_post",
+        title: "Có bài viết cần duyệt lại",
+        message: `${actor.fullName} vừa cập nhật "${post.title}" và bài đang chờ admin kiểm duyệt.`,
+        actionPath: "/admin/pending-posts",
+        actorId: actor.id,
+        severity: moderation.severity === "high" ? "danger" : "warning",
+        entityType: "post",
+        entityId: post.id,
+      });
+    }
 
     return buildPostSummary(state, post);
   });
@@ -729,6 +1090,22 @@ function deletePost(postId, actor, deletionReason = "", violationTerms = []) {
       violationTerms: savedViolationTerms.map((item) => item.phrase),
     });
 
+    if (actor.role === "admin" && post.authorId !== actor.id) {
+      createNotification(state, {
+        userId: post.authorId,
+        type: "post_removed",
+        title: "Bài viết đã bị gỡ khỏi diễn đàn",
+        message: deletionReason
+          ? `Bài "${post.title}" đã bị admin xóa. Lý do: ${deletionReason}.`
+          : `Bài "${post.title}" đã bị admin xóa khỏi diễn đàn.`,
+        actionPath: "/profile",
+        actorId: actor.id,
+        severity: "danger",
+        entityType: "post",
+        entityId: post.id,
+      });
+    }
+
     state.posts.splice(postIndex, 1);
     removePostRelations(state, postId);
 
@@ -739,6 +1116,7 @@ function deletePost(postId, actor, deletionReason = "", violationTerms = []) {
 function toggleLike(postId, userId) {
   return withState((state) => {
     const post = getPostById(state, postId);
+    const actor = getUserById(state, userId);
 
     if (!post) {
       throw new Error("POST_NOT_FOUND");
@@ -747,6 +1125,20 @@ function toggleLike(postId, userId) {
     const alreadyLiked = post.likes.includes(userId);
     post.likes = alreadyLiked ? post.likes.filter((item) => item !== userId) : [...post.likes, userId];
     post.updatedAt = nowIso();
+
+    if (!alreadyLiked && actor && post.authorId !== userId) {
+      createNotification(state, {
+        userId: post.authorId,
+        type: "post_like",
+        title: "Bài viết có lượt thích mới",
+        message: `${actor.fullName} vừa thích bài "${post.title}".`,
+        actionPath: "/profile",
+        actorId: userId,
+        severity: "info",
+        entityType: "post",
+        entityId: post.id,
+      });
+    }
 
     return buildPostSummary(state, post);
   });
@@ -780,6 +1172,7 @@ function toggleSave(postId, userId) {
 function createComment(postId, userId, content) {
   return withState((state) => {
     const post = getPostById(state, postId);
+    const actor = getUserById(state, userId);
 
     if (!post) {
       throw new Error("POST_NOT_FOUND");
@@ -796,6 +1189,21 @@ function createComment(postId, userId, content) {
     };
 
     state.comments.push(comment);
+
+    if (actor && post.authorId !== userId) {
+      createNotification(state, {
+        userId: post.authorId,
+        type: "post_comment",
+        title: "Bài viết có bình luận mới",
+        message: `${actor.fullName} vừa bình luận trong bài "${post.title}".`,
+        actionPath: "/profile",
+        actorId: userId,
+        severity: "info",
+        entityType: "post",
+        entityId: post.id,
+      });
+    }
+
     return buildCommentSummary(state, comment);
   });
 }
@@ -809,9 +1217,26 @@ function deleteComment(commentId, actor) {
     }
 
     const comment = state.comments[commentIndex];
+    const post = getPostById(state, comment.postId);
 
     if (actor.role !== "admin" && comment.authorId !== actor.id) {
       throw new Error("FORBIDDEN");
+    }
+
+    if (actor.role === "admin" && comment.authorId !== actor.id) {
+      createNotification(state, {
+        userId: comment.authorId,
+        type: "comment_removed",
+        title: "Bình luận đã bị xóa",
+        message: post
+          ? `Admin đã gỡ bình luận của bạn trong bài "${post.title}".`
+          : "Admin đã gỡ một bình luận của bạn vì vi phạm nội quy.",
+        actionPath: "/profile",
+        actorId: actor.id,
+        severity: "warning",
+        entityType: "comment",
+        entityId: comment.id,
+      });
     }
 
     state.comments.splice(commentIndex, 1);
@@ -836,6 +1261,10 @@ function createReport({ targetType, targetId, reporterId, reason, note, severity
       throw new Error("TARGET_NOT_FOUND");
     }
 
+    const targetPost = targetType === "post" ? getPostById(state, targetId) : null;
+    const targetComment = targetType === "comment" ? getCommentById(state, targetId) : null;
+    const reporter = getUserById(state, reporterId);
+    const ownerId = targetPost ? targetPost.authorId : targetComment ? targetComment.authorId : "";
     const timestamp = nowIso();
     const report = {
       id: nextId(state, "report", "report"),
@@ -851,6 +1280,37 @@ function createReport({ targetType, targetId, reporterId, reason, note, severity
     };
 
     state.reports.push(report);
+
+    notifyAdmins(state, {
+      type: "admin_new_report",
+      title: targetType === "post" ? "Có báo cáo bài viết mới" : "Có báo cáo bình luận mới",
+      message:
+        targetType === "post"
+          ? `${reporter?.fullName || "Một người dùng"} vừa báo cáo bài "${targetPost?.title || "không xác định"}".`
+          : `${reporter?.fullName || "Một người dùng"} vừa báo cáo một bình luận và cần admin xem xét.`,
+      actionPath: "/admin/reports",
+      actorId: reporterId,
+      severity: report.severity === "high" ? "danger" : "warning",
+      entityType: targetType,
+      entityId: targetId,
+    });
+
+    if (ownerId && ownerId !== reporterId) {
+      createNotification(state, {
+        userId: ownerId,
+        type: "content_reported",
+        title: targetType === "post" ? "Bài viết đang được xem xét" : "Bình luận đang được xem xét",
+        message:
+          targetType === "post"
+            ? `Bài "${targetPost?.title || "không xác định"}" vừa bị báo cáo và đang chờ admin kiểm tra.`
+            : "Một bình luận của bạn vừa bị báo cáo và đang chờ admin kiểm tra.",
+        actionPath: "/profile",
+        severity: "warning",
+        entityType: targetType,
+        entityId: targetId,
+      });
+    }
+
     return buildReportSummary(state, report);
   });
 }
@@ -897,6 +1357,18 @@ function approvePost(postId) {
 
     post.status = "approved";
     post.updatedAt = nowIso();
+
+    createNotification(state, {
+      userId: post.authorId,
+      type: "post_approved",
+      title: "Bài viết đã được duyệt",
+      message: `Bài "${post.title}" đã được admin phê duyệt và đang hiển thị trên diễn đàn.`,
+      actionPath: "/profile",
+      severity: "success",
+      entityType: "post",
+      entityId: post.id,
+    });
+
     return buildPostSummary(state, post);
   });
 }
@@ -932,6 +1404,20 @@ function rejectPost(postId, actor, deletionReason = "", violationTerms = []) {
       violationTerms: savedViolationTerms.map((item) => item.phrase),
     });
 
+    createNotification(state, {
+      userId: post.authorId,
+      type: "post_rejected",
+      title: "Bài viết đã bị từ chối",
+      message: deletionReason
+        ? `Bài "${post.title}" đã bị admin gỡ trong bước kiểm duyệt. Lý do: ${deletionReason}.`
+        : `Bài "${post.title}" đã bị admin từ chối trong bước kiểm duyệt.`,
+      actionPath: "/profile",
+      actorId: actor.id,
+      severity: "danger",
+      entityType: "post",
+      entityId: post.id,
+    });
+
     state.posts.splice(postIndex, 1);
     removePostRelations(state, postId);
 
@@ -959,7 +1445,79 @@ function updateReportStatus(reportId, status) {
     report.status = status;
     report.updatedAt = nowIso();
 
+    createNotification(state, {
+      userId: report.reporterId,
+      type: "report_status_updated",
+      title: "Báo cáo của bạn đã được cập nhật",
+      message:
+        status === "resolved"
+          ? "Admin đã xử lý xong báo cáo bạn gửi."
+          : "Admin đã xem báo cáo bạn gửi và cập nhật trạng thái xử lý.",
+      actionPath: "/home",
+      severity: status === "resolved" ? "success" : "info",
+      entityType: report.targetType,
+      entityId: report.targetId,
+    });
+
     return buildReportSummary(state, report);
+  });
+}
+
+function listNotifications(userId, { limit = 12 } = {}) {
+  const state = readState();
+  ensureArray(state, "notifications");
+  const safeLimit = Math.min(normalizePaginationValue(limit, 12), 30);
+  const notifications = state.notifications
+    .filter((item) => item.userId === userId)
+    .sort((left, right) => new Date(right.createdAt) - new Date(left.createdAt));
+
+  return {
+    unreadCount: notifications.filter((item) => !item.readAt).length,
+    totalItems: notifications.length,
+    items: notifications.slice(0, safeLimit).map((item) => buildNotificationSummary(state, item)),
+  };
+}
+
+function markNotificationRead(userId, notificationId) {
+  return withState((state) => {
+    ensureArray(state, "notifications");
+    const notification = state.notifications.find((item) => item.id === notificationId && item.userId === userId);
+
+    if (!notification) {
+      throw new Error("NOTIFICATION_NOT_FOUND");
+    }
+
+    if (!notification.readAt) {
+      const timestamp = nowIso();
+      notification.readAt = timestamp;
+      notification.updatedAt = timestamp;
+    }
+
+    return {
+      unreadCount: state.notifications.filter((item) => item.userId === userId && !item.readAt).length,
+      notification: buildNotificationSummary(state, notification),
+    };
+  });
+}
+
+function markAllNotificationsRead(userId) {
+  return withState((state) => {
+    ensureArray(state, "notifications");
+    const timestamp = nowIso();
+    let updatedCount = 0;
+
+    state.notifications.forEach((item) => {
+      if (item.userId === userId && !item.readAt) {
+        item.readAt = timestamp;
+        item.updatedAt = timestamp;
+        updatedCount += 1;
+      }
+    });
+
+    return {
+      unreadCount: 0,
+      updatedCount,
+    };
   });
 }
 
@@ -978,6 +1536,7 @@ function getStatistics() {
 
 module.exports = {
   approvePost,
+  createPasswordResetToken,
   createCategory,
   createComment,
   createManagedUserProfile,
@@ -995,9 +1554,16 @@ module.exports = {
   getUserProfileWithStats,
   listPendingPosts,
   listPostsByAuthor,
+  listNotifications,
   listReports,
   listSavedPosts,
   listUsers,
+  markAllNotificationsRead,
+  markPasswordResetTokenConsumed,
+  markNotificationRead,
+  revokePasswordResetToken,
+  searchUsers,
+  getPublicUserProfile,
   rejectPost,
   toggleLike,
   toggleSave,
@@ -1006,4 +1572,5 @@ module.exports = {
   updateReportStatus,
   updateUserProfile,
   upsertUserFromAuth,
+  validatePasswordResetToken,
 };
